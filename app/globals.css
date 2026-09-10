@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------
+   BRYM — design tokens (portados do protótipo brym-prototype.jsx)
+   Paleta: deep ink navy + brass/gold + papel cru.
+   Display: Fraunces · UI/corpo: Inter · números: IBM Plex Mono.
+------------------------------------------------------------------ */
+@theme {
+  --color-ink: #14171c;
+  --color-ink-soft: #1d2128;
+  --color-ink-line: #2a2f38;
+  --color-paper: #f6f2ea;
+  --color-card: #ffffff;
+  --color-border: #e7e0d0;
+  --color-gold: #c79a45;
+  --color-gold-deep: #a67c2e;
+  --color-gold-soft: #efddb0;
+  --color-garnet: #9c3b34;
+  --color-forest: #3e6259;
+  --color-text: #1f2328;
+  --color-text-soft: #5b564c;
+  --color-text-faint: #9a927e;
+
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SF Mono", monospace;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+/* Faixa dourada — topo da sidebar e das telas de auth */
+.brym-gold-stripe {
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--color-gold),
+    var(--color-gold-soft),
+    var(--color-gold)
+  );
+}
