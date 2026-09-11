@@ -30,7 +30,7 @@ export function SignupForm() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <TextField
           dark
-          label="Seu nome"
+          label="Nome completo"
           name="nome"
           autoComplete="name"
           required
@@ -47,7 +47,7 @@ export function SignupForm() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <TextField
           dark
-          label="E-mail"
+          label="E-mail profissional"
           name="email"
           type="email"
           autoComplete="email"
@@ -56,7 +56,7 @@ export function SignupForm() {
         />
         <TextField
           dark
-          label="Senha"
+          label="Crie sua senha"
           name="senha"
           type="password"
           autoComplete="new-password"
@@ -68,7 +68,7 @@ export function SignupForm() {
 
       <div>
         <span className="mb-1.5 block text-[12.5px] font-semibold text-text-faint">
-          Segmento do negócio
+          Tipo de negócio
         </span>
         <SegmentPicker dark />
       </div>

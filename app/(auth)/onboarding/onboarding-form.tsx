@@ -40,7 +40,7 @@ export function OnboardingForm({
 
       <div>
         <span className="mb-1.5 block text-[12.5px] font-semibold text-text-faint">
-          Segmento do negócio
+          Tipo de negócio
         </span>
         <SegmentPicker dark defaultValue={defaultSegmento} />
       </div>
