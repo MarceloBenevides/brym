@@ -55,6 +55,8 @@ export async function confirmarReservaAction(
   nome: string,
   telefone: string,
   itens: ItemConfirmar[],
+  aniversarioDia?: number,
+  aniversarioMes?: number,
 ): Promise<ConfirmarResultado> {
   const supabase = await createClient();
   const { data: resultado, error } = await supabase.rpc("agendar_confirmar", {
@@ -62,6 +64,8 @@ export async function confirmarReservaAction(
     p_nome: nome,
     p_telefone: telefone,
     p_itens: itens,
+    p_aniversario_dia: aniversarioDia ?? null,
+    p_aniversario_mes: aniversarioMes ?? null,
   });
   if (error || !resultado) return { ok: false, motivo: "erro" };
   return resultado as ConfirmarResultado;

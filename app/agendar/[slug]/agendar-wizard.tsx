@@ -16,6 +16,7 @@ import {
   horaEmMinutos,
   somarDias,
 } from "@/lib/agenda";
+import { MESES_NOMES } from "@/lib/aniversario";
 import { formatBRL, formatDuracao } from "@/lib/format";
 import {
   buscarDisponibilidadeAction,
@@ -685,6 +686,8 @@ function EtapaDados({
 }) {
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
+  const [aniversarioDia, setAniversarioDia] = useState("");
+  const [aniversarioMes, setAniversarioMes] = useState("");
   const [erro, setErro] = useState<{ msg: string; itemId?: string } | null>(null);
   const [enviando, startTransition] = useTransition();
 
@@ -694,6 +697,10 @@ function EtapaDados({
   const confirmar = () => {
     setErro(null);
     startTransition(async () => {
+      // Só faz sentido mandar o par completo — um dia sem mês (ou vice-versa)
+      // não identifica uma data; o RPC também ignora par incompleto.
+      const dia = Number(aniversarioDia) || undefined;
+      const mes = Number(aniversarioMes) || undefined;
       const resultado = await confirmarReservaAction(
         slug,
         nome.trim(),
@@ -704,6 +711,8 @@ function EtapaDados({
           data: i.data,
           hora_inicio: i.hora_inicio,
         })),
+        dia && mes ? dia : undefined,
+        dia && mes ? mes : undefined,
       );
       if (resultado.ok) {
         onConfirmado(resultado);
@@ -795,6 +804,37 @@ function EtapaDados({
             placeholder="(00) 00000-0000"
             className="flex-1 bg-transparent font-mono text-sm text-white outline-none placeholder:text-text-faint"
           />
+        </div>
+        <div>
+          <span className="mb-1.5 block text-[12px] font-semibold text-text-faint">
+            Aniversário (opcional)
+          </span>
+          <div className="flex gap-2">
+            <input
+              value={aniversarioDia}
+              onChange={(e) => setAniversarioDia(e.target.value.replace(/\D/g, "").slice(0, 2))}
+              type="number"
+              inputMode="numeric"
+              min={1}
+              max={31}
+              placeholder="Dia"
+              aria-label="Dia do aniversário"
+              className="w-20 rounded-xl border border-ink-line bg-ink-soft px-3.5 py-3 text-sm text-white outline-none placeholder:text-text-faint"
+            />
+            <select
+              value={aniversarioMes}
+              onChange={(e) => setAniversarioMes(e.target.value)}
+              aria-label="Mês do aniversário"
+              className="flex-1 rounded-xl border border-ink-line bg-ink-soft px-3.5 py-3 text-sm text-white outline-none"
+            >
+              <option value="">Mês</option>
+              {MESES_NOMES.map((nomeMes, i) => (
+                <option key={nomeMes} value={i + 1}>
+                  {nomeMes}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 

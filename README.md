@@ -74,6 +74,7 @@ Stack: **Next.js 16** (App Router) · **Tailwind CSS v4** · **Supabase**
 |---|---|
 | ✅ | **Horário de funcionamento** — por dia da semana em Configurações, com dia fechado (ex.: domingo). `tenant_settings.horario_funcionamento` (jsonb, chaves `"0"`–`"6"`, 0 = domingo). Substitui a janela fixa 08:00–20:00: vale **rígido no link público** (`agendar_disponibilidade`/`agendar_confirmar` recusam fora do horário ou em dia fechado); na **Agenda interna** os slots fora do expediente somem da grade + banner, mas o dono ainda cria agendamento manual (agendamento fora da janela não some — a grade se estende) |
 | ✅ | **Ausências de profissional** — folga/falta/atraso, dia inteiro ou intervalo. Cadastro **só do dono** em Equipe → Profissionais (`<details>` "Ausências" por profissional; o funcionário vinculado não marca a própria). Tabela `ausencias` (RLS: SELECT p/ qualquer membro, gerência só `is_owner()`). **Link público** bloqueia rígido (`ausente_dia` some da grade, intervalos entram em `ocupados`, `agendar_confirmar` → `motivo:'ausente'`). **Agenda interna** marca visualmente (faixa no topo da coluna + blocos "ausente" nos slots) e avisa no modal (⚠ amarelo), mas o dono **consegue** agendar por cima — sem trigger novo em `appointments` |
+| ✅ | **Aniversário no agendamento online** — a etapa final do wizard público (nome+telefone) ganhou "Aniversário (opcional)": dia + mês (sem ano, mesmo formato de `clients.aniversario_dia/mes`). `agendar_confirmar` grava no cliente novo; num cliente já existente (achado pelo telefone) **só preenche se ainda estiver vazio** — nunca sobrescreve, e um valor incompleto/fora do range nunca trava a reserva (fica em silêncio) |
 
 | Assinatura (gateway genérico) | |
 |---|---|
@@ -86,7 +87,7 @@ Stack: **Next.js 16** (App Router) · **Tailwind CSS v4** · **Supabase**
 | ✅ | **Publicado** — GitHub → Vercel (auto-deploy no push em `main`), `https://brym.vercel.app`. `vercel.json` fixa as Vercel Functions em `gru1` (São Paulo) — sem isso rodam em `iad1` (EUA) por padrão, e cada request dinâmico paga round-trip extra até o Supabase (BR); o Edge Middleware (`proxy.ts`) já rodava em `gru1`. Corte de ~40–50% na latência de rotas dinâmicas |
 | ✅ | **Cadastro do dono** — rótulos revisados ("Nome completo", "E-mail profissional", "Crie sua senha", "Tipo de negócio", nos dois passos). Telefone (passo 2, `/onboarding`) ganhou seletor de país (`components/onboarding/phone-country-field.tsx`, `libphonenumber-js`: formata enquanto digita + valida por DDI; Brasil + Portugal + Espanha + UE principais). O país escolhido preenche `tenant_settings.ddi` na criação do tenant (`create_tenant_for_current_user` ganhou `p_ddi`) — o dono não precisa configurar de novo em Configurações |
 
-Migrations `0001`–`0034` verificadas end-to-end contra o Supabase.
+Migrations `0001`–`0035` verificadas end-to-end contra o Supabase.
 
 **Setup do admin da plataforma** (uma vez, no SQL Editor, depois da migration 0027):
 ```sql
