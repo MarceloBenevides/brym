@@ -34,7 +34,7 @@ sempre online. Este diretório guarda só o schema versionado.
 | `tenant_settings` | flags de configuração do negócio (§2.5 da spec) |
 | `service_categories` | categorias de serviço, populadas conforme o segmento no onboarding |
 | `current_tenant_id()` | função `SECURITY DEFINER` usada nas políticas de RLS |
-| `create_tenant_for_current_user(nome, segmento, telefone)` | RPC de onboarding: cria tenant + perfil do dono + settings + categorias |
+| `create_tenant_for_current_user(nome, segmento, telefone, ddi)` | RPC de onboarding: cria tenant + perfil do dono + settings (com o `ddi` do país escolhido no cadastro) + categorias |
 | `handle_new_user()` + trigger | cria um `profile` vazio assim que alguém se registra |
 | `invitations` (0002) | convites de funcionário por link (token, permissões, status) — RLS só do dono |
 | `profiles.permissoes` (0002) | seções liberadas para o funcionário (`text[]`) |

@@ -81,7 +81,12 @@ Stack: **Next.js 16** (App Router) · **Tailwind CSS v4** · **Supabase**
 | ✅ | **Asaas — gateway ATIVO (Pix, mercado BR)** — o Checkout recorrente do Asaas só aceita cartão, então "Assinar" cria a assinatura pela API: `POST /customers` (nome + **CPF/CNPJ** do dono, coletado no BRYM num passo único) → `POST /subscriptions` (`billingType: "UNDEFINED"`, mensal, `externalReference = tenant_id`) → redireciona o dono pra `invoiceUrl` da 1ª cobrança, onde ele paga por **Pix, boleto ou cartão** (escolha dele). Webhook `POST /api/asaas/webhook` valida o header `asaas-access-token`, resolve o negócio pelo `externalReference` → `gateway_customer_id` → `gateway_subscription_id`, e mapeia: `PAYMENT_RECEIVED`/`PAYMENT_CONFIRMED` → ativa (+33 dias), `PAYMENT_OVERDUE` → 7 dias de carência, `PAYMENT_REFUNDED`/chargeback/`SUBSCRIPTION_DELETED` → encerra. "Cancelar assinatura" = `DELETE /v3/subscriptions/{id}`; trocar de plano = cancela + reassina |
 | ⏸ | **Stripe — DORMENTE (expansão europeia)** — `/api/stripe/webhook` + `/api/stripe/portal` + `lib/stripe*.ts` continuam no código, só sem tráfego. As `STRIPE_*` env ficam vazias |
 
-Migrations `0001`–`0033` verificadas end-to-end contra o Supabase.
+| Produção | |
+|---|---|
+| ✅ | **Publicado** — GitHub → Vercel (auto-deploy no push em `main`), `https://brym.vercel.app`. `vercel.json` fixa as Vercel Functions em `gru1` (São Paulo) — sem isso rodam em `iad1` (EUA) por padrão, e cada request dinâmico paga round-trip extra até o Supabase (BR); o Edge Middleware (`proxy.ts`) já rodava em `gru1`. Corte de ~40–50% na latência de rotas dinâmicas |
+| ✅ | **Cadastro do dono** — rótulos revisados ("Nome completo", "E-mail profissional", "Crie sua senha", "Tipo de negócio", nos dois passos). Telefone (passo 2, `/onboarding`) ganhou seletor de país (`components/onboarding/phone-country-field.tsx`, `libphonenumber-js`: formata enquanto digita + valida por DDI; Brasil + Portugal + Espanha + UE principais). O país escolhido preenche `tenant_settings.ddi` na criação do tenant (`create_tenant_for_current_user` ganhou `p_ddi`) — o dono não precisa configurar de novo em Configurações |
+
+Migrations `0001`–`0034` verificadas end-to-end contra o Supabase.
 
 **Setup do admin da plataforma** (uma vez, no SQL Editor, depois da migration 0027):
 ```sql

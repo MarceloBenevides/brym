@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 
 import { createTenantAction, type AuthState } from "@/app/auth/actions";
+import { PhoneCountryField } from "@/components/onboarding/phone-country-field";
 import { SegmentPicker } from "@/components/onboarding/segment-picker";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { TextField } from "@/components/ui/text-field";
@@ -29,14 +30,7 @@ export function OnboardingForm({
         defaultValue={defaultNegocio}
         placeholder="Ex.: Studio Alfa"
       />
-      <TextField
-        dark
-        label="Telefone (opcional)"
-        name="telefone"
-        type="tel"
-        autoComplete="tel"
-        placeholder="(00) 00000-0000"
-      />
+      <PhoneCountryField />
 
       <div>
         <span className="mb-1.5 block text-[12.5px] font-semibold text-text-faint">

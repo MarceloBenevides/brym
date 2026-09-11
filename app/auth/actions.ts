@@ -144,10 +144,15 @@ export async function createTenantAction(
     .object({
       negocio: z.string().trim().min(2, "Informe o nome do negócio."),
       telefone: z.string().trim().optional(),
+      ddi: z.preprocess(
+        (v) => String(v ?? "").replace(/\D/g, "").slice(0, 4),
+        z.string().max(4),
+      ),
     })
     .safeParse({
       negocio: formData.get("negocio"),
       telefone: formData.get("telefone"),
+      ddi: formData.get("ddi"),
     });
 
   if (!parsed.success) {
@@ -162,6 +167,7 @@ export async function createTenantAction(
     p_nome: parsed.data.negocio,
     p_segmento: segmento,
     p_telefone: parsed.data.telefone || null,
+    p_ddi: parsed.data.ddi || null,
   });
 
   if (error) {
