@@ -59,3 +59,20 @@ export function isSegmento(value: unknown): value is Segmento {
 export function segmentoLabel(value: Segmento): string {
   return SEGMENTOS.find((s) => s.value === value)?.label ?? "Negócio";
 }
+
+/**
+ * Exemplo de serviço por segmento — usado como placeholder no cadastro de
+ * Serviços. Mesmo espírito das categorias sugeridas (`suggested_service_categories`
+ * no banco, migration 0001): um exemplo reconhecível pro tipo de negócio.
+ */
+const PLACEHOLDER_SERVICO: Record<Segmento, string> = {
+  barbearia: "Ex.: Corte tesoura",
+  salao: "Ex.: Corte e escova",
+  clinica: "Ex.: Consulta",
+  estudio: "Ex.: Sessão de tatuagem",
+  outro: "Ex.: Nome do serviço",
+};
+
+export function placeholderServico(value: Segmento | null | undefined): string {
+  return PLACEHOLDER_SERVICO[value as Segmento] ?? PLACEHOLDER_SERVICO.outro;
+}

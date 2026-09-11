@@ -9,7 +9,7 @@ import { ServicesManager } from "./services-manager";
 export const metadata: Metadata = { title: "Serviços" };
 
 export default async function ServicosPage() {
-  await requireSection("servicos");
+  const ctx = await requireSection("servicos");
   const supabase = await createClient();
 
   const [{ data: categorias }, { data: servicos }] = await Promise.all([
@@ -35,6 +35,7 @@ export default async function ServicosPage() {
       <ServicesManager
         categorias={categorias ?? []}
         servicos={servicos ?? []}
+        segmento={ctx.tenant.segmento}
       />
     </div>
   );

@@ -10,7 +10,8 @@ import { SelectField } from "@/components/ui/select-field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { TextField } from "@/components/ui/text-field";
 import { formatBRL, formatDuracao } from "@/lib/format";
-import type { ServiceRow } from "@/types/database";
+import { placeholderServico } from "@/lib/segments";
+import type { Segmento, ServiceRow } from "@/types/database";
 import {
   createCategoryAction,
   deleteCategoryAction,
@@ -28,9 +29,11 @@ const SEM_CATEGORIA = "__sem__";
 export function ServicesManager({
   categorias,
   servicos,
+  segmento,
 }: {
   categorias: Categoria[];
   servicos: ServiceRow[];
+  segmento: Segmento;
 }) {
   const [editing, setEditing] = useState<ServiceRow | "novo" | null>(null);
   const [gerenciarCategorias, setGerenciarCategorias] = useState(false);
@@ -123,6 +126,7 @@ export function ServicesManager({
         <ServiceFormModal
           categorias={categorias}
           service={editing === "novo" ? null : editing}
+          segmento={segmento}
           onClose={() => setEditing(null)}
         />
       )}
@@ -160,10 +164,12 @@ function agrupar(servicos: ServiceRow[], categorias: Categoria[]) {
 function ServiceFormModal({
   categorias,
   service,
+  segmento,
   onClose,
 }: {
   categorias: Categoria[];
   service: ServiceRow | null;
+  segmento: Segmento;
   onClose: () => void;
 }) {
   const [state, action] = useActionState(saveServiceAction, INITIAL);
@@ -184,7 +190,7 @@ function ServiceFormModal({
           name="nome"
           required
           defaultValue={service?.nome ?? ""}
-          placeholder="Ex.: Corte tesoura"
+          placeholder={placeholderServico(segmento)}
         />
         <SelectField
           label="Categoria"
