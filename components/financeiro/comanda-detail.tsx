@@ -15,6 +15,7 @@ import {
   removePaymentAction,
   type ComandaFormState,
 } from "@/app/(app)/financeiro/comanda-actions";
+import { ActionButton } from "@/components/ui/action-button";
 import { Card } from "@/components/ui/card";
 import { Pill } from "@/components/ui/pill";
 import { SelectField } from "@/components/ui/select-field";
@@ -151,13 +152,12 @@ export function ComandaDetail({
                     <form action={rmItem}>
                       <input type="hidden" name="comanda_id" value={comanda.id} />
                       <input type="hidden" name="item_id" value={it.id} />
-                      <button
-                        type="submit"
+                      <ActionButton
                         className="rounded-lg p-1.5 text-text-faint hover:bg-[#f7e7e5] hover:text-garnet"
                         aria-label="Remover item"
                       >
                         <Trash2 size={14} />
-                      </button>
+                      </ActionButton>
                     </form>
                   )}
                 </div>
@@ -205,13 +205,12 @@ export function ComandaDetail({
                     <form action={rmPag}>
                       <input type="hidden" name="comanda_id" value={comanda.id} />
                       <input type="hidden" name="payment_id" value={p.id} />
-                      <button
-                        type="submit"
+                      <ActionButton
                         className="rounded-lg p-1.5 text-text-faint hover:bg-[#f7e7e5] hover:text-garnet"
                         aria-label="Remover pagamento"
                       >
                         <Trash2 size={14} />
-                      </button>
+                      </ActionButton>
                     </form>
                   )}
                 </div>
@@ -257,23 +256,23 @@ export function ComandaDetail({
           podeFinanceiro && (
             <form action={reabrirComandaAction}>
               <input type="hidden" name="comanda_id" value={comanda.id} />
-              <button
-                type="submit"
+              <ActionButton
+                pendingLabel="Reabrindo…"
                 className="rounded-xl border border-border px-4 py-3 text-sm font-semibold text-text-soft hover:border-gold"
               >
                 Reabrir comanda
-              </button>
+              </ActionButton>
             </form>
           )
         )}
         <form action={excluirComandaAction}>
           <input type="hidden" name="comanda_id" value={comanda.id} />
-          <button
-            type="submit"
+          <ActionButton
+            pendingLabel="Excluindo…"
             className="rounded-xl border border-border px-4 py-3 text-sm font-semibold text-text-soft hover:border-garnet hover:text-garnet"
           >
             Excluir
-          </button>
+          </ActionButton>
         </form>
       </div>
 

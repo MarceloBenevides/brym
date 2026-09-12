@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 
+import { ActionButton } from "@/components/ui/action-button";
 import { Card } from "@/components/ui/card";
 import { Pill } from "@/components/ui/pill";
 import { formatAniversario, iniciais } from "@/lib/format";
@@ -157,12 +158,9 @@ function BotaoParabenizar({
         <form action={desmarcarFelicitacaoAction}>
           <input type="hidden" name="client_id" value={cliente.id} />
           <input type="hidden" name="ano" value={ano} />
-          <button
-            type="submit"
-            className="text-[12px] font-semibold text-text-faint hover:text-text-soft"
-          >
+          <ActionButton className="text-[12px] font-semibold text-text-faint hover:text-text-soft">
             desmarcar
-          </button>
+          </ActionButton>
         </form>
         <button
           type="button"
@@ -179,13 +177,13 @@ function BotaoParabenizar({
     <form action={marcarFelicitacaoAction} className="shrink-0">
       <input type="hidden" name="client_id" value={cliente.id} />
       <input type="hidden" name="ano" value={ano} />
-      <button
-        type="submit"
+      <ActionButton
         onClick={abrirWhats}
+        pendingLabel="Marcando…"
         className="inline-flex items-center gap-1.5 rounded-xl bg-ink px-3.5 py-2 text-[12.5px] font-semibold text-white"
       >
         <MessageCircle size={14} /> Parabenizar
-      </button>
+      </ActionButton>
     </form>
   );
 }

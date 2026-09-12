@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useState } from "react";
 import { ChevronRight, Pencil, Plus } from "lucide-react";
 
+import { ActionButton } from "@/components/ui/action-button";
 import { Card } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
 import { SearchInput } from "@/components/ui/search-input";
@@ -175,12 +176,12 @@ function ClientDetailModal({
           </button>
           <form action={deleteClientAction}>
             <input type="hidden" name="id" value={client.id} />
-            <button
-              type="submit"
+            <ActionButton
+              pendingLabel="Removendo…"
               className="rounded-xl border border-border px-4 py-2 text-sm font-semibold text-text-soft hover:border-garnet hover:text-garnet"
             >
               Remover
-            </button>
+            </ActionButton>
           </form>
         </div>
       )}

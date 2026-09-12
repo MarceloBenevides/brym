@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Pencil, Plus, SlidersHorizontal, Tag, Trash2 } from "lucide-react";
 
+import { ActionButton } from "@/components/ui/action-button";
 import { Card } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
 import { Pill } from "@/components/ui/pill";
@@ -143,13 +144,12 @@ export function ProductsManager({
                       </button>
                       <form action={deleteProductAction}>
                         <input type="hidden" name="id" value={p.id} />
-                        <button
-                          type="submit"
+                        <ActionButton
                           className="rounded-lg p-1.5 text-text-faint hover:bg-[#f7e7e5] hover:text-garnet"
                           aria-label={`Excluir ${p.nome}`}
                         >
                           <Trash2 size={14} />
-                        </button>
+                        </ActionButton>
                       </form>
                     </div>
                   </div>
@@ -453,12 +453,12 @@ function CategoryManagerModal({
           placeholder="Nova categoria"
           className="flex-1 rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm outline-none focus:border-gold focus:ring-2 focus:ring-gold/25"
         />
-        <button
-          type="submit"
+        <ActionButton
+          pendingLabel="Adicionando…"
           className="rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-white"
         >
           Adicionar
-        </button>
+        </ActionButton>
       </form>
       {state.error && (
         <p className="mb-3 text-[12.5px] text-garnet">{state.error}</p>
@@ -483,22 +483,21 @@ function CategoryManagerModal({
                   minLength={2}
                   className="flex-1 rounded-lg border border-border bg-card px-3 py-1.5 text-[13px] outline-none focus:border-gold"
                 />
-                <button
-                  type="submit"
+                <ActionButton
+                  pendingLabel="…"
                   className="rounded-lg border border-border px-2.5 py-1.5 text-[12px] font-semibold text-text-soft"
                 >
                   Renomear
-                </button>
+                </ActionButton>
               </form>
               <form action={deleteProductCategoryAction}>
                 <input type="hidden" name="id" value={c.id} />
-                <button
-                  type="submit"
+                <ActionButton
                   className="rounded-lg border border-border px-2.5 py-1.5 text-[12px] font-semibold text-text-soft hover:border-garnet hover:text-garnet"
                   aria-label={`Excluir ${c.nome}`}
                 >
                   <Trash2 size={13} />
-                </button>
+                </ActionButton>
               </form>
             </li>
           ))}

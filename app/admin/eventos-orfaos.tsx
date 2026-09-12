@@ -1,3 +1,4 @@
+import { ActionButton } from "@/components/ui/action-button";
 import { Card } from "@/components/ui/card";
 import type {
   PlataformaEventoOrfao,
@@ -75,12 +76,12 @@ export function EventosOrfaos({
                 </option>
               ))}
             </select>
-            <button
-              type="submit"
+            <ActionButton
+              pendingLabel="Vinculando…"
               className="rounded-lg bg-ink px-3 py-1.5 text-[12.5px] font-semibold text-white"
             >
               Vincular
-            </button>
+            </ActionButton>
           </form>
         ))}
       </div>

@@ -13,6 +13,7 @@ import {
   salvarAusenciaAction,
   type AusenciaState,
 } from "@/app/(app)/equipe/ausencia-actions";
+import { ActionButton } from "@/components/ui/action-button";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
@@ -127,12 +128,9 @@ export function ProfessionalsSection({
                   <form action={toggleProfessionalAction}>
                     <input type="hidden" name="id" value={p.id} />
                     <input type="hidden" name="ativo" value={String(p.ativo)} />
-                    <button
-                      type="submit"
-                      className="rounded-lg border border-border px-2.5 py-1.5 text-[12px] font-semibold text-text-soft"
-                    >
+                    <ActionButton className="rounded-lg border border-border px-2.5 py-1.5 text-[12px] font-semibold text-text-soft">
                       {p.ativo ? "Desativar" : "Reativar"}
-                    </button>
+                    </ActionButton>
                   </form>
                 </div>
               </div>
@@ -203,13 +201,12 @@ function AusenciasProf({
                 </span>
                 <form action={removerAusenciaAction}>
                   <input type="hidden" name="id" value={a.id} />
-                  <button
-                    type="submit"
+                  <ActionButton
                     className="shrink-0 rounded-lg p-1 text-text-faint hover:text-garnet"
                     aria-label="Remover ausência"
                   >
                     <Trash2 size={13} />
-                  </button>
+                  </ActionButton>
                 </form>
               </li>
             ))}

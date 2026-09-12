@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronRight, Plus, Receipt, TrendingUp } from "lucide-react";
 
 import { abrirVendaAvulsaAction } from "@/app/(app)/financeiro/comanda-actions";
+import { ActionButton } from "@/components/ui/action-button";
 import { Card } from "@/components/ui/card";
 import { Pill } from "@/components/ui/pill";
 import { StatCard } from "@/components/ui/stat-card";
@@ -49,12 +50,12 @@ export async function ComandasTab({ mes }: { mes: string }) {
     <div>
       <div className="mb-5">
         <form action={abrirVendaAvulsaAction}>
-          <button
-            type="submit"
+          <ActionButton
+            pendingLabel={<>Abrindo…</>}
             className="flex items-center gap-1.5 rounded-xl bg-ink px-4 py-2 text-sm font-semibold text-white"
           >
             <Plus size={15} /> Nova venda
-          </button>
+          </ActionButton>
         </form>
         <p className="mt-1.5 text-[11.5px] text-text-faint">
           Venda de balcão (só produtos), sem agendamento. Atendimentos com hora

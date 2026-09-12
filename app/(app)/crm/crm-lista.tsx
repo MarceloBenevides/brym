@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 
+import { ActionButton } from "@/components/ui/action-button";
 import { Card } from "@/components/ui/card";
 import { Pill } from "@/components/ui/pill";
 import { cn } from "@/lib/cn";
@@ -181,12 +182,9 @@ function BotaoContatar({
       <div className="flex shrink-0 items-center gap-2">
         <form action={desfazerContatoAction}>
           <input type="hidden" name="client_id" value={cliente.id} />
-          <button
-            type="submit"
-            className="text-[12px] font-semibold text-text-faint hover:text-text-soft"
-          >
+          <ActionButton className="text-[12px] font-semibold text-text-faint hover:text-text-soft">
             desmarcar
-          </button>
+          </ActionButton>
         </form>
         <button
           type="button"
@@ -202,13 +200,13 @@ function BotaoContatar({
   return (
     <form action={registrarContatoAction} className="shrink-0">
       <input type="hidden" name="client_id" value={cliente.id} />
-      <button
-        type="submit"
+      <ActionButton
         onClick={abrirWhats}
+        pendingLabel="Marcando…"
         className="inline-flex items-center gap-1.5 rounded-xl bg-ink px-3.5 py-2 text-[12.5px] font-semibold text-white"
       >
         <MessageCircle size={14} /> Contatar
-      </button>
+      </ActionButton>
     </form>
   );
 }

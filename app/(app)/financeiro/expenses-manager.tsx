@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 
+import { ActionButton } from "@/components/ui/action-button";
 import { Card } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
 import { Pill } from "@/components/ui/pill";
@@ -84,11 +85,11 @@ export function ExpensesManager({
                     name="status"
                     value={d.status === "pago" ? "pendente" : "pago"}
                   />
-                  <button type="submit" aria-label="Alternar situação">
+                  <ActionButton aria-label="Alternar situação">
                     <Pill tone={d.status === "pago" ? "forest" : "gold"}>
                       {d.status === "pago" ? "pago" : "pendente"}
                     </Pill>
-                  </button>
+                  </ActionButton>
                 </form>
                 <button
                   onClick={() => setEditing(d)}
@@ -99,13 +100,12 @@ export function ExpensesManager({
                 </button>
                 <form action={deleteExpenseAction}>
                   <input type="hidden" name="id" value={d.id} />
-                  <button
-                    type="submit"
+                  <ActionButton
                     className="rounded-lg p-1.5 text-text-faint hover:bg-[#f7e7e5] hover:text-garnet"
                     aria-label="Excluir despesa"
                   >
                     <Trash2 size={14} />
-                  </button>
+                  </ActionButton>
                 </form>
               </div>
             </div>

@@ -1,3 +1,4 @@
+import { ActionButton } from "@/components/ui/action-button";
 import { Card } from "@/components/ui/card";
 import { Pill } from "@/components/ui/pill";
 import { planoLabel } from "@/lib/planos";
@@ -49,12 +50,9 @@ function StatusAcoes({
         <form key={a.status} action={setStatusNegocioAction}>
           <input type="hidden" name="tenant_id" value={id} />
           <input type="hidden" name="status" value={a.status} />
-          <button
-            type="submit"
-            className="text-[11px] font-semibold text-text-faint hover:text-gold-deep"
-          >
+          <ActionButton className="text-[11px] font-semibold text-text-faint hover:text-gold-deep">
             {a.label}
-          </button>
+          </ActionButton>
         </form>
       ))}
     </div>
@@ -70,12 +68,9 @@ function EstenderTrial({ id, status }: { id: string; status: StatusAssinatura })
         <form key={dias} action={estenderTrialAction}>
           <input type="hidden" name="tenant_id" value={id} />
           <input type="hidden" name="dias" value={dias} />
-          <button
-            type="submit"
-            className="font-semibold text-text-faint hover:text-gold-deep"
-          >
+          <ActionButton className="font-semibold text-text-faint hover:text-gold-deep">
             +{dias}d
-          </button>
+          </ActionButton>
         </form>
       ))}
     </div>
@@ -95,12 +90,9 @@ function AtivarManual({ id }: { id: string }) {
         <form key={o.meses} action={ativarManualAction}>
           <input type="hidden" name="tenant_id" value={id} />
           <input type="hidden" name="meses" value={o.meses} />
-          <button
-            type="submit"
-            className="font-semibold text-text-faint hover:text-gold-deep"
-          >
+          <ActionButton className="font-semibold text-text-faint hover:text-gold-deep">
             {o.label}
-          </button>
+          </ActionButton>
         </form>
       ))}
     </div>

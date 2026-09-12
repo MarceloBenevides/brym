@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Check, Copy, X } from "lucide-react";
 
 import { revokeInviteAction } from "@/app/(app)/equipe/actions";
+import { ActionButton } from "@/components/ui/action-button";
 import { resumoPermissoes } from "@/lib/permissions";
 
 export interface PendingInvite {
@@ -49,13 +50,13 @@ export function PendingInvites({ invites }: { invites: PendingInvite[] }) {
             <CopyLinkButton token={inv.token} />
             <form action={revokeInviteAction}>
               <input type="hidden" name="id" value={inv.id} />
-              <button
-                type="submit"
+              <ActionButton
+                pendingLabel="Revogando…"
                 title="Revogar convite"
                 className="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-[12px] font-semibold text-text-soft transition-colors hover:border-garnet hover:text-garnet"
               >
                 <X size={13} /> Revogar
-              </button>
+              </ActionButton>
             </form>
           </div>
         </li>

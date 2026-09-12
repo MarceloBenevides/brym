@@ -4,6 +4,7 @@ import { useActionState, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 
+import { ActionButton } from "@/components/ui/action-button";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
@@ -612,12 +613,11 @@ function AppointmentModal({
               >
                 <input type="hidden" name="id" value={agendamento!.id} />
                 <input type="hidden" name="status" value={status} />
-                <button
-                  type="submit"
+                <ActionButton
                   className="rounded-lg border border-border px-3 py-1.5 text-[12px] font-semibold text-text-soft hover:border-gold"
                 >
                   {label}
-                </button>
+                </ActionButton>
               </form>
             ))}
           </div>
@@ -646,12 +646,12 @@ function AppointmentModal({
                   name="appointment_id"
                   value={agendamento!.id}
                 />
-                <button
-                  type="submit"
+                <ActionButton
+                  pendingLabel="Abrindo…"
                   className="inline-flex items-center gap-1.5 rounded-xl bg-ink px-4 py-2 text-sm font-semibold text-white"
                 >
                   Abrir comanda
-                </button>
+                </ActionButton>
               </form>
             )}
           </div>

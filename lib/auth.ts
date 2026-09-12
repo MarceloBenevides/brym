@@ -61,8 +61,12 @@ export const getAppContext = cache(async (): Promise<AppContext | null> => {
 
   let tenant: TenantRow | null = null;
   let settings: TenantSettingsRow | null = null;
+  let professionalId: string | null = null;
   if (profile?.tenant_id) {
-    const [{ data: t }, { data: s }] = await Promise.all([
+    // As 3 dependem só de `profile.tenant_id`/`claims.sub`, já resolvidos
+    // acima — nenhuma depende do resultado das outras, então rodam juntas
+    // num único round-trip em vez de 2 em fila.
+    const [{ data: t }, { data: s }, { data: prof }] = await Promise.all([
       supabase
         .from("tenants")
         .select("*")
@@ -73,22 +77,18 @@ export const getAppContext = cache(async (): Promise<AppContext | null> => {
         .select("*")
         .eq("tenant_id", profile.tenant_id)
         .maybeSingle<TenantSettingsRow>(),
+      supabase
+        .from("professionals")
+        .select("id")
+        .eq("user_id", claims.sub)
+        .maybeSingle<{ id: string }>(),
     ]);
     tenant = t ?? null;
     settings = s ?? null;
+    professionalId = prof?.id ?? null;
   }
 
   const isOwner = profile?.papel === "owner" && Boolean(profile.tenant_id);
-
-  let professionalId: string | null = null;
-  if (profile?.tenant_id) {
-    const { data: prof } = await supabase
-      .from("professionals")
-      .select("id")
-      .eq("user_id", claims.sub)
-      .maybeSingle<{ id: string }>();
-    professionalId = prof?.id ?? null;
-  }
 
   return {
     claims,
