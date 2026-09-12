@@ -27,6 +27,10 @@ export function SearchInput({
       const params = new URLSearchParams(searchParams);
       if (value.trim()) params.set(paramName, value.trim());
       else params.delete(paramName);
+      // Um filtro novo pode deixar a página atual sem resultados —
+      // volta pra página 1 em telas que usam paginação (inofensivo nas
+      // que não usam, já que o parâmetro nem existe ali).
+      params.delete("page");
       startTransition(() => {
         router.replace(`${pathname}?${params.toString()}`, { scroll: false });
       });
