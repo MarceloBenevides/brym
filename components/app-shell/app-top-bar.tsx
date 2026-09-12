@@ -1,3 +1,5 @@
+import { Menu } from "lucide-react";
+
 import { Pill } from "@/components/ui/pill";
 import { segmentoLabel } from "@/lib/segments";
 import type { ProfileRow, TenantRow } from "@/types/database";
@@ -19,16 +21,29 @@ export function AppTopBar({
   tenant,
   profile,
   isOwner,
+  onMenuClick,
 }: {
   tenant: TenantRow;
   profile: ProfileRow;
   isOwner: boolean;
+  onMenuClick?: () => void;
 }) {
   return (
-    <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-paper/85 px-8 py-3.5 backdrop-blur">
-      <div className="text-[13px] text-text-soft">
-        <span className="font-semibold text-text">{tenant.nome}</span>
-        <span className="text-text-faint"> · {segmentoLabel(tenant.segmento)}</span>
+    <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-paper/85 px-4 py-3.5 backdrop-blur md:px-8">
+      <div className="flex items-center gap-3 text-[13px] text-text-soft">
+        {onMenuClick && (
+          <button
+            onClick={onMenuClick}
+            aria-label="Abrir menu"
+            className="-ml-1 rounded-lg p-1.5 text-text-soft hover:bg-[#f1ece1] md:hidden"
+          >
+            <Menu size={19} />
+          </button>
+        )}
+        <div>
+          <span className="font-semibold text-text">{tenant.nome}</span>
+          <span className="text-text-faint"> · {segmentoLabel(tenant.segmento)}</span>
+        </div>
       </div>
       <div className="flex items-center gap-3">
         {isOwner ? (

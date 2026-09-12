@@ -38,7 +38,7 @@ export function Sidebar({
   });
 
   return (
-    <aside className="sticky top-0 flex h-dvh w-60 shrink-0 flex-col bg-ink">
+    <aside className="flex h-dvh w-60 flex-col bg-ink md:sticky md:top-0">
       <div className="px-5 py-6">
         <Logo dark />
       </div>
