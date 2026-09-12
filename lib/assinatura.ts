@@ -23,6 +23,7 @@ type TenantAssinatura = Pick<
   | "trial_expira_em"
   | "assinatura_ativa_ate"
   | "assinatura_em_atraso"
+  | "gateway"
 >;
 
 export function estadoAssinatura(
@@ -37,6 +38,10 @@ export function estadoAssinatura(
     if (!t.assinatura_ativa_ate) return "comp";
     const ativa = agora.getTime() < new Date(t.assinatura_ativa_ate).getTime();
     if (!ativa) return "vencida";
+    // Sem gateway vinculado = concessão manual do /admin (cortesia,
+    // parceria, ajuste pontual) — mesmo com prazo, não é uma assinatura
+    // paga de verdade, então continua "comp" em vez de "ativa".
+    if (!t.gateway) return "comp";
     return t.assinatura_em_atraso ? "em_atraso" : "ativa";
   }
 
@@ -148,7 +153,9 @@ export function assinaturaResumo(
       return {
         estado,
         titulo: "Conta liberada",
-        detalhe: "Acesso concedido pelo BRYM.",
+        detalhe: t.assinatura_ativa_ate
+          ? `Cortesia até ${dataBR(t.assinatura_ativa_ate)}.`
+          : "Acesso concedido pelo BRYM.",
       };
     case "suspensa_admin":
       return {

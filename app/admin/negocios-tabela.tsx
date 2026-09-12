@@ -9,7 +9,11 @@ import {
   type PlataformaNegocio,
 } from "@/lib/plataforma";
 import type { StatusAssinatura } from "@/types/database";
-import { setStatusNegocioAction } from "./actions";
+import {
+  ativarManualAction,
+  estenderTrialAction,
+  setStatusNegocioAction,
+} from "./actions";
 
 function dataBR(iso: string | null) {
   if (!iso) return "—";
@@ -50,6 +54,52 @@ function StatusAcoes({
             className="text-[11px] font-semibold text-text-faint hover:text-gold-deep"
           >
             {a.label}
+          </button>
+        </form>
+      ))}
+    </div>
+  );
+}
+
+function EstenderTrial({ id, status }: { id: string; status: StatusAssinatura }) {
+  if (status !== "trial") return null;
+  return (
+    <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px] text-text-faint">
+      <span>trial:</span>
+      {[7, 15, 30].map((dias) => (
+        <form key={dias} action={estenderTrialAction}>
+          <input type="hidden" name="tenant_id" value={id} />
+          <input type="hidden" name="dias" value={dias} />
+          <button
+            type="submit"
+            className="font-semibold text-text-faint hover:text-gold-deep"
+          >
+            +{dias}d
+          </button>
+        </form>
+      ))}
+    </div>
+  );
+}
+
+function AtivarManual({ id }: { id: string }) {
+  const opcoes = [
+    { meses: 3, label: "3m" },
+    { meses: 6, label: "6m" },
+    { meses: 12, label: "1a" },
+  ];
+  return (
+    <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px] text-text-faint">
+      <span>ativar:</span>
+      {opcoes.map((o) => (
+        <form key={o.meses} action={ativarManualAction}>
+          <input type="hidden" name="tenant_id" value={id} />
+          <input type="hidden" name="meses" value={o.meses} />
+          <button
+            type="submit"
+            className="font-semibold text-text-faint hover:text-gold-deep"
+          >
+            {o.label}
           </button>
         </form>
       ))}
@@ -112,6 +162,8 @@ export function NegociosTabela({ negocios }: { negocios: PlataformaNegocio[] }) 
                     <div className="mt-1 text-[11px] text-text-faint">{trial}</div>
                   )}
                   <StatusAcoes id={n.id} status={n.status_assinatura} />
+                  <EstenderTrial id={n.id} status={n.status_assinatura} />
+                  <AtivarManual id={n.id} />
                 </td>
                 <td className="px-5 py-3.5 whitespace-nowrap text-text-soft">
                   {n.plano || n.tem_gateway ? (

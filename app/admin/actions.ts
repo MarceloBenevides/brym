@@ -28,6 +28,50 @@ export async function setStatusNegocioAction(formData: FormData) {
   revalidatePath("/admin");
 }
 
+const estenderTrialSchema = z.object({
+  tenant_id: z.uuid(),
+  dias: z.coerce.number().int().refine((n) => [7, 15, 30].includes(n)),
+});
+
+export async function estenderTrialAction(formData: FormData) {
+  await requirePlataformaAdmin();
+
+  const parsed = estenderTrialSchema.safeParse({
+    tenant_id: formData.get("tenant_id"),
+    dias: formData.get("dias"),
+  });
+  if (!parsed.success) return;
+
+  const supabase = await createClient();
+  await supabase.rpc("plataforma_estender_trial", {
+    p_tenant_id: parsed.data.tenant_id,
+    p_dias: parsed.data.dias,
+  });
+  revalidatePath("/admin");
+}
+
+const ativarManualSchema = z.object({
+  tenant_id: z.uuid(),
+  meses: z.coerce.number().int().refine((n) => [3, 6, 12].includes(n)),
+});
+
+export async function ativarManualAction(formData: FormData) {
+  await requirePlataformaAdmin();
+
+  const parsed = ativarManualSchema.safeParse({
+    tenant_id: formData.get("tenant_id"),
+    meses: formData.get("meses"),
+  });
+  if (!parsed.success) return;
+
+  const supabase = await createClient();
+  await supabase.rpc("plataforma_ativar_manual", {
+    p_tenant_id: parsed.data.tenant_id,
+    p_meses: parsed.data.meses,
+  });
+  revalidatePath("/admin");
+}
+
 const vincularSchema = z.object({
   event_id: z.string().min(1),
   tenant_id: z.uuid(),
