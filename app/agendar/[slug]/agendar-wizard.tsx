@@ -193,7 +193,7 @@ export function AgendarWizard({
                 setProfissionalAtual(null);
                 setPasso("servicos");
               }}
-              className="rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-white"
+              className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text-soft"
             >
               Adicionar mais um serviço
             </button>
@@ -202,7 +202,7 @@ export function AgendarWizard({
                 setModalAdicionado(null);
                 setPasso("carrinho");
               }}
-              className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text-soft"
+              className="rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-white"
             >
               Continuar
             </button>
