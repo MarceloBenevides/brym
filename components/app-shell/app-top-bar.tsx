@@ -1,5 +1,6 @@
 import { Menu } from "lucide-react";
 
+import { AvatarMenu } from "@/components/app-shell/avatar-menu";
 import { Pill } from "@/components/ui/pill";
 import { segmentoLabel } from "@/lib/segments";
 import type { ProfileRow, TenantRow } from "@/types/database";
@@ -22,11 +23,13 @@ export function AppTopBar({
   profile,
   isOwner,
   onMenuClick,
+  signOut,
 }: {
   tenant: TenantRow;
   profile: ProfileRow;
   isOwner: boolean;
   onMenuClick?: () => void;
+  signOut: () => Promise<void>;
 }) {
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-paper/85 px-4 py-3.5 backdrop-blur md:px-8">
@@ -54,9 +57,10 @@ export function AppTopBar({
         ) : (
           <Pill tone="neutral">Funcionário</Pill>
         )}
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gold text-[13px] font-semibold text-ink">
-          {initials(profile.nome || profile.email || "?")}
-        </div>
+        <AvatarMenu
+          initials={initials(profile.nome || profile.email || "?")}
+          signOut={signOut}
+        />
       </div>
     </header>
   );

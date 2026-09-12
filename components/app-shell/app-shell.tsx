@@ -81,6 +81,7 @@ export function AppShell({
           profile={profile}
           isOwner={isOwner}
           onMenuClick={() => setOpen(true)}
+          signOut={signOut}
         />
         <AssinaturaBanner tenant={tenant} isOwner={isOwner} />
         <main className="mx-auto w-full max-w-6xl flex-1 p-4 md:p-8">
