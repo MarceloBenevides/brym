@@ -86,8 +86,9 @@ Stack: **Next.js 16** (App Router) · **Tailwind CSS v4** · **Supabase**
 |---|---|
 | ✅ | **Publicado** — GitHub → Vercel (auto-deploy no push em `main`), `https://brym.vercel.app`. `vercel.json` fixa as Vercel Functions em `gru1` (São Paulo) — sem isso rodam em `iad1` (EUA) por padrão, e cada request dinâmico paga round-trip extra até o Supabase (BR); o Edge Middleware (`proxy.ts`) já rodava em `gru1`. Corte de ~40–50% na latência de rotas dinâmicas |
 | ✅ | **Cadastro do dono** — rótulos revisados ("Nome completo", "E-mail profissional", "Crie sua senha", "Tipo de negócio", nos dois passos). Telefone (passo 2, `/onboarding`) ganhou seletor de país (`components/onboarding/phone-country-field.tsx`, `libphonenumber-js`: formata enquanto digita + valida por DDI; Brasil + Portugal + Espanha + UE principais). O país escolhido preenche `tenant_settings.ddi` na criação do tenant (`create_tenant_for_current_user` ganhou `p_ddi`) — o dono não precisa configurar de novo em Configurações |
+| ✅ | **`/admin` — trial e ativação manual** — `plataforma_estender_trial` (+7/15/30 dias) e `plataforma_ativar_manual` (3/6/12 meses, sem passar pela Asaas — cortesia/parceria/ajuste pontual). `lib/assinatura.ts`: "ativo" sem `gateway` vinculado sempre cai em `"comp"` mesmo com prazo definido, evitando mostrar "Renova em ..." numa concessão manual |
 
-Migrations `0001`–`0035` verificadas end-to-end contra o Supabase.
+Migrations `0001`–`0036` verificadas end-to-end contra o Supabase.
 
 **Setup do admin da plataforma** (uma vez, no SQL Editor, depois da migration 0027):
 ```sql
