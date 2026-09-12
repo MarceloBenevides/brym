@@ -52,15 +52,21 @@ export async function assinarPlanoAction(formData: FormData) {
     }
   }
 
-  const assinatura = await criarAssinatura({
-    tenantId: ctx.tenant.id,
-    plano,
-    nome: ctx.tenant.nome,
-    email: ctx.profile.email,
-    cpfCnpj: cpf,
-    customerIdExistente:
-      ctx.tenant.gateway === "asaas" ? ctx.tenant.gateway_customer_id : null,
-  });
+  let assinatura;
+  try {
+    assinatura = await criarAssinatura({
+      tenantId: ctx.tenant.id,
+      plano,
+      nome: ctx.tenant.nome,
+      email: ctx.profile.email,
+      cpfCnpj: cpf,
+      customerIdExistente:
+        ctx.tenant.gateway === "asaas" ? ctx.tenant.gateway_customer_id : null,
+    });
+  } catch (err) {
+    console.error("[assinar] falha ao criar assinatura no Asaas:", err);
+    redirect("/assinar?erro=asaas");
+  }
 
   const supabase = await createClient();
   await supabase
@@ -81,6 +87,11 @@ export async function cancelarAssinaturaAction() {
   if (!ctx?.profile || !ctx.tenant || !ctx.isOwner) redirect("/assinar");
   if (!ctx.tenant.gateway_subscription_id) redirect("/assinar");
 
-  await cancelarAssinatura(ctx.tenant.gateway_subscription_id);
+  try {
+    await cancelarAssinatura(ctx.tenant.gateway_subscription_id);
+  } catch (err) {
+    console.error("[assinar] falha ao cancelar assinatura:", err);
+    redirect("/assinar?erro=asaas");
+  }
   redirect("/assinar?cancelada=1");
 }

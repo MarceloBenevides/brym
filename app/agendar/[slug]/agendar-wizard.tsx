@@ -189,22 +189,22 @@ export function AgendarWizard({
             <button
               onClick={() => {
                 setModalAdicionado(null);
-                setPasso("carrinho");
-              }}
-              className="rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-white"
-            >
-              Continuar
-            </button>
-            <button
-              onClick={() => {
-                setModalAdicionado(null);
                 setServicoAtual(null);
                 setProfissionalAtual(null);
                 setPasso("servicos");
               }}
-              className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text-soft"
+              className="rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-white"
             >
               Adicionar mais um serviço
+            </button>
+            <button
+              onClick={() => {
+                setModalAdicionado(null);
+                setPasso("carrinho");
+              }}
+              className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text-soft"
+            >
+              Continuar
             </button>
             <button
               onClick={() => {
