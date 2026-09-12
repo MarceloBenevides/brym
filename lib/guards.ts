@@ -90,13 +90,15 @@ export async function requireGerenciarClientes() {
 export async function requireComanda(
   comandaId: string,
 ): Promise<{ ctx: Awaited<ReturnType<typeof requireApp>>; comanda: ComandaRow }> {
-  const ctx = await requireApp();
   const supabase = await createClient();
-  const { data: comanda } = await supabase
-    .from("comandas")
-    .select("*")
-    .eq("id", comandaId)
-    .maybeSingle<ComandaRow>();
+  // A busca da comanda só depende do `comandaId` (já conhecido) — não
+  // precisa esperar o `requireApp()` terminar pra começar. Rodando junto
+  // vira 1 round-trip a menos numa ação chamada em toda comanda (o ponto
+  // mais clicado do app).
+  const [ctx, { data: comanda }] = await Promise.all([
+    requireApp(),
+    supabase.from("comandas").select("*").eq("id", comandaId).maybeSingle<ComandaRow>(),
+  ]);
 
   const pode =
     comanda != null &&

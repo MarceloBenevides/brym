@@ -25,7 +25,6 @@ export async function saveAppointmentAction(
   _prev: AgendaState,
   formData: FormData,
 ): Promise<AgendaState> {
-  const ctx = await requireApp();
   const supabase = await createClient();
 
   const parsed = schema.safeParse({
@@ -38,6 +37,18 @@ export async function saveAppointmentAction(
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Dados inválidos." };
   }
+
+  // A duração do serviço só depende do `service_id` já validado acima — não
+  // precisa esperar o `requireApp()` terminar pra ser buscada. 1 round-trip
+  // a menos numa ação bem clicada (salvar agendamento).
+  const [ctx, { data: servico }] = await Promise.all([
+    requireApp(),
+    supabase
+      .from("services")
+      .select("duracao_min")
+      .eq("id", parsed.data.service_id)
+      .single(),
+  ]);
 
   const supabaseId = formData.get("id");
   const editandoId =
@@ -105,12 +116,7 @@ export async function saveAppointmentAction(
 
   if (!clientId) return { error: "Escolha um cliente ou cadastre um novo." };
 
-  // duração do serviço → hora_fim
-  const { data: servico } = await supabase
-    .from("services")
-    .select("duracao_min")
-    .eq("id", parsed.data.service_id)
-    .single();
+  // duração do serviço (buscada em paralelo com requireApp() lá em cima) → hora_fim
   const duracao = (servico?.duracao_min as number | undefined) ?? 30;
   const horaFim = addMinutos(parsed.data.hora_inicio, duracao);
 

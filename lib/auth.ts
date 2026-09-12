@@ -43,9 +43,22 @@ export interface AppContext {
   professionalId: string | null;
 }
 
+type ProfileComTenant = ProfileRow & {
+  tenants: (TenantRow & { tenant_settings: TenantSettingsRow | null }) | null;
+};
+
 /**
  * Contexto do usuário logado (dono ou funcionário): claims + perfil + tenant
  * + papel + permissões. Retorna `null` quando não há sessão.
+ *
+ * **Medido em produção (2026-09)**: cada ida-e-volta ao Supabase custa
+ * ~250-500ms daqui. Antes eram 2 round-trips em fila (profile → tenant+
+ * settings+professional) — profile e tenant/settings agora vêm **embutidos
+ * num único select** (PostgREST resolve o join por FK: profiles → tenants →
+ * tenant_settings), e `professionals` roda em paralelo no mesmo
+ * `Promise.all` (não depende do profile, só de `claims.sub`) — o contexto
+ * inteiro vira 1 round-trip em vez de 2, e isso roda em toda página e toda
+ * server action do app.
  */
 export const getAppContext = cache(async (): Promise<AppContext | null> => {
   const claims = await getSessionClaims();
@@ -53,41 +66,21 @@ export const getAppContext = cache(async (): Promise<AppContext | null> => {
 
   const supabase = await createClient();
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", claims.sub)
-    .maybeSingle<ProfileRow>();
+  const [{ data: profile }, { data: prof }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("*, tenants(*, tenant_settings(*))")
+      .eq("id", claims.sub)
+      .maybeSingle<ProfileComTenant>(),
+    supabase
+      .from("professionals")
+      .select("id")
+      .eq("user_id", claims.sub)
+      .maybeSingle<{ id: string }>(),
+  ]);
 
-  let tenant: TenantRow | null = null;
-  let settings: TenantSettingsRow | null = null;
-  let professionalId: string | null = null;
-  if (profile?.tenant_id) {
-    // As 3 dependem só de `profile.tenant_id`/`claims.sub`, já resolvidos
-    // acima — nenhuma depende do resultado das outras, então rodam juntas
-    // num único round-trip em vez de 2 em fila.
-    const [{ data: t }, { data: s }, { data: prof }] = await Promise.all([
-      supabase
-        .from("tenants")
-        .select("*")
-        .eq("id", profile.tenant_id)
-        .maybeSingle<TenantRow>(),
-      supabase
-        .from("tenant_settings")
-        .select("*")
-        .eq("tenant_id", profile.tenant_id)
-        .maybeSingle<TenantSettingsRow>(),
-      supabase
-        .from("professionals")
-        .select("id")
-        .eq("user_id", claims.sub)
-        .maybeSingle<{ id: string }>(),
-    ]);
-    tenant = t ?? null;
-    settings = s ?? null;
-    professionalId = prof?.id ?? null;
-  }
-
+  const tenant = profile?.tenants ?? null;
+  const settings = tenant?.tenant_settings ?? null;
   const isOwner = profile?.papel === "owner" && Boolean(profile.tenant_id);
 
   return {
@@ -98,6 +91,6 @@ export const getAppContext = cache(async (): Promise<AppContext | null> => {
     isOwner,
     plataformaAdmin: profile?.plataforma_admin ?? false,
     permissoes: profile?.permissoes ?? [],
-    professionalId,
+    professionalId: prof?.id ?? null,
   };
 });
