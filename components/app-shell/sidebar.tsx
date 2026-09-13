@@ -8,8 +8,9 @@ import { Logo } from "@/components/brand/logo";
 import { GoldStripe } from "@/components/brand/gold-stripe";
 import { cn } from "@/lib/cn";
 import { podeAcessarSecao } from "@/lib/permissions";
+import { secaoLiberadaPeloPlano } from "@/lib/planos";
 import { secaoHabilitada } from "@/lib/settings";
-import type { TenantSettingsRow } from "@/types/database";
+import type { PlanoAssinatura, TenantSettingsRow } from "@/types/database";
 import { NAV_ITEMS } from "./nav";
 
 export function Sidebar({
@@ -19,6 +20,7 @@ export function Sidebar({
   isProfessional,
   plataformaAdmin,
   settings,
+  plano,
 }: {
   signOut: () => Promise<void>;
   isOwner: boolean;
@@ -26,11 +28,13 @@ export function Sidebar({
   isProfessional: boolean;
   plataformaAdmin: boolean;
   settings: TenantSettingsRow | null;
+  plano: PlanoAssinatura | null;
 }) {
   const pathname = usePathname();
   const items = NAV_ITEMS.filter((item) => {
-    // flag desligada esconde a seção pra todo mundo, inclusive o dono
+    // flag desligada e seção fora do plano escondem pra todo mundo, inclusive o dono
     if (item.flag && !secaoHabilitada(item.section, settings)) return false;
+    if (!secaoLiberadaPeloPlano(item.section, plano)) return false;
     if (item.professionalOnly) return !isOwner && isProfessional;
     if (isOwner) return true;
     if (item.ownerOnly) return false;

@@ -26,7 +26,7 @@ export default async function ConfiguracoesPage() {
     <div>
       <PageHeader title="Configurações" subtitle="Preferências do negócio" />
       {settings ? (
-        <SettingsForm settings={settings} />
+        <SettingsForm settings={settings} plano={ctx.tenant.plano} />
       ) : (
         <p className="text-[13.5px] text-text-soft">
           Não foi possível carregar as preferências. Recarregue a página.

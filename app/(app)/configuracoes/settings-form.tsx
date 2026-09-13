@@ -7,14 +7,24 @@ import { SelectField } from "@/components/ui/select-field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { TextField } from "@/components/ui/text-field";
 import { DIAS_SEMANA_LONGO } from "@/lib/agenda";
+import { secaoLiberadaPeloPlano } from "@/lib/planos";
 import { INTERVALOS_AGENDAMENTO, MENSAGEM_MAX } from "@/lib/settings";
-import type { TenantSettingsRow } from "@/types/database";
+import type { PlanoAssinatura, TenantSettingsRow } from "@/types/database";
 import { saveSettingsAction, type FormState } from "./actions";
 
 const INITIAL: FormState = {};
 
-export function SettingsForm({ settings }: { settings: TenantSettingsRow }) {
+export function SettingsForm({
+  settings,
+  plano,
+}: {
+  settings: TenantSettingsRow;
+  plano: PlanoAssinatura | null;
+}) {
   const [state, action] = useActionState(saveSettingsAction, INITIAL);
+  const temProdutos = secaoLiberadaPeloPlano("produtos", plano);
+  const temFornecedores = secaoLiberadaPeloPlano("fornecedores", plano);
+  const temCrm = secaoLiberadaPeloPlano("crm", plano);
 
   return (
     <form action={action} className="space-y-6">
@@ -54,18 +64,32 @@ export function SettingsForm({ settings }: { settings: TenantSettingsRow }) {
       </Secao>
 
       <Secao titulo="Recursos">
-        <LinhaToggle
-          name="habilitar_estoque"
-          defaultChecked={settings.habilitar_estoque}
-          label="Controle de estoque"
-          caption="Mostra a seção Produtos e o controle de entrada/saída."
-        />
-        <LinhaToggle
-          name="habilitar_fornecedores"
-          defaultChecked={settings.habilitar_fornecedores}
-          label="Fornecedores"
-          caption="Mostra a seção Fornecedores (contatos e compras de reposição)."
-        />
+        {temProdutos ? (
+          <LinhaToggle
+            name="habilitar_estoque"
+            defaultChecked={settings.habilitar_estoque}
+            label="Controle de estoque"
+            caption="Mostra a seção Produtos e o controle de entrada/saída."
+          />
+        ) : (
+          // Fora do plano: some o toggle, mas preserva o valor atual no
+          // salvar (senão o campo some do FormData e a action lê como "off").
+          settings.habilitar_estoque && (
+            <input type="hidden" name="habilitar_estoque" value="on" />
+          )
+        )}
+        {temFornecedores ? (
+          <LinhaToggle
+            name="habilitar_fornecedores"
+            defaultChecked={settings.habilitar_fornecedores}
+            label="Fornecedores"
+            caption="Mostra a seção Fornecedores (contatos e compras de reposição)."
+          />
+        ) : (
+          settings.habilitar_fornecedores && (
+            <input type="hidden" name="habilitar_fornecedores" value="on" />
+          )
+        )}
         <LinhaToggle
           name="habilitar_pacotes"
           defaultChecked={settings.habilitar_pacotes}
@@ -89,43 +113,58 @@ export function SettingsForm({ settings }: { settings: TenantSettingsRow }) {
         />
       </Secao>
 
-      <Secao titulo="Recuperação de clientes (CRM)">
-        <div className="grid gap-4 sm:grid-cols-3">
-          <TextField
-            label="Ativo até (dias)"
-            name="crm_dias_ativo"
-            type="number"
-            min={1}
-            max={3650}
-            defaultValue={settings.crm_dias_ativo}
+      {temCrm ? (
+        <Secao titulo="Recuperação de clientes (CRM)">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <TextField
+              label="Ativo até (dias)"
+              name="crm_dias_ativo"
+              type="number"
+              min={1}
+              max={3650}
+              defaultValue={settings.crm_dias_ativo}
+            />
+            <TextField
+              label="Em atenção até (dias)"
+              name="crm_dias_atencao"
+              type="number"
+              min={1}
+              max={3650}
+              defaultValue={settings.crm_dias_atencao}
+            />
+            <TextField
+              label="Inativo até (dias)"
+              name="crm_dias_inativo"
+              type="number"
+              min={1}
+              max={3650}
+              defaultValue={settings.crm_dias_inativo}
+            />
+          </div>
+          <p className="mt-1.5 text-[12px] text-text-faint">
+            Dias sem vir (desde o último atendimento concluído) que separam os
+            status. Acima do último limite, o cliente é considerado “Perdido”.
+          </p>
+          <CampoTexto
+            name="mensagem_recuperacao"
+            label="Mensagem de recuperação (WhatsApp)"
+            defaultValue={settings.mensagem_recuperacao ?? ""}
           />
-          <TextField
-            label="Em atenção até (dias)"
-            name="crm_dias_atencao"
-            type="number"
-            min={1}
-            max={3650}
-            defaultValue={settings.crm_dias_atencao}
+        </Secao>
+      ) : (
+        // Fora do plano: some a seção, mas preserva os valores atuais no
+        // salvar — o schema da action exige esses 3 campos sempre.
+        <>
+          <input type="hidden" name="crm_dias_ativo" value={settings.crm_dias_ativo} />
+          <input type="hidden" name="crm_dias_atencao" value={settings.crm_dias_atencao} />
+          <input type="hidden" name="crm_dias_inativo" value={settings.crm_dias_inativo} />
+          <input
+            type="hidden"
+            name="mensagem_recuperacao"
+            value={settings.mensagem_recuperacao ?? ""}
           />
-          <TextField
-            label="Inativo até (dias)"
-            name="crm_dias_inativo"
-            type="number"
-            min={1}
-            max={3650}
-            defaultValue={settings.crm_dias_inativo}
-          />
-        </div>
-        <p className="mt-1.5 text-[12px] text-text-faint">
-          Dias sem vir (desde o último atendimento concluído) que separam os
-          status. Acima do último limite, o cliente é considerado “Perdido”.
-        </p>
-        <CampoTexto
-          name="mensagem_recuperacao"
-          label="Mensagem de recuperação (WhatsApp)"
-          defaultValue={settings.mensagem_recuperacao ?? ""}
-        />
-      </Secao>
+        </>
+      )}
 
       <Secao titulo="Mensagens">
         <div>

@@ -73,6 +73,7 @@ export function AppShell({
           isProfessional={isProfessional}
           plataformaAdmin={plataformaAdmin}
           settings={settings}
+          plano={tenant.plano}
         />
       </div>
       <div className="flex min-w-0 flex-1 flex-col">

@@ -93,3 +93,62 @@ export function planoPorValorReais(
   const centavos = Math.round(n * 100);
   return PLANOS_ORDEM.find((p) => PLANOS[p].valorCentavos === centavos) ?? null;
 }
+
+// ----------------------------------------------------------------
+// Régua de acesso por plano — o que cada nível libera. Espelha o texto de
+// `recursos` acima (Profissional = "Comandas e financeiro"; Gestão =
+// "Estoque e fornecedores" + "CRM de recuperação") — mantenha os dois em
+// sincronia se o texto mudar.
+// ----------------------------------------------------------------
+
+const ORDEM_PLANO: Record<PlanoAssinatura, number> = {
+  essencial: 0,
+  profissional: 1,
+  gestao: 2,
+};
+
+/** Seções da navegação (chave = `NavItem.section` / `requireSection`). */
+const PLANO_MINIMO_SECAO: Partial<Record<string, PlanoAssinatura>> = {
+  produtos: "gestao",
+  fornecedores: "gestao",
+  crm: "gestao",
+};
+
+/**
+ * Capacidades **dentro** de uma seção já liberada, que ainda dependem do
+ * plano — hoje só as abas avançadas de Financeiro (Comandas fica de fora
+ * de propósito: é a única aba livre desde o Essencial). Mesmo espírito de
+ * `PERMISSOES_EXTRAS` em `lib/permissions.ts` (seção vs. capacidade extra
+ * que não é seção), só que no eixo do plano do negócio em vez da permissão
+ * do funcionário.
+ */
+const PLANO_MINIMO_CAPACIDADE: Partial<Record<string, PlanoAssinatura>> = {
+  financeiro_avancado: "profissional",
+};
+
+function liberadoPeloPlano(
+  minimo: PlanoAssinatura | undefined,
+  plano: PlanoAssinatura | null,
+): boolean {
+  if (!minimo) return true;
+  // Sem plano definido (trial, ou ativação manual pelo /admin sem gateway)
+  // libera tudo — só um plano pago específico restringe.
+  if (!plano) return true;
+  return ORDEM_PLANO[plano] >= ORDEM_PLANO[minimo];
+}
+
+/** A seção está liberada pelo plano do negócio? */
+export function secaoLiberadaPeloPlano(
+  secao: string,
+  plano: PlanoAssinatura | null,
+): boolean {
+  return liberadoPeloPlano(PLANO_MINIMO_SECAO[secao], plano);
+}
+
+/** A capacidade (recorte dentro de uma seção já liberada) está liberada? */
+export function capacidadeLiberadaPeloPlano(
+  capacidade: string,
+  plano: PlanoAssinatura | null,
+): boolean {
+  return liberadoPeloPlano(PLANO_MINIMO_CAPACIDADE[capacidade], plano);
+}

@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { PageHeader } from "@/components/app-shell/page-header";
 import { Tabs } from "@/components/ui/tabs";
 import { requireSection } from "@/lib/guards";
 import { mesAtualISO, mesPorExtenso, normalizarMes, somarMeses } from "@/lib/mes";
+import { capacidadeLiberadaPeloPlano } from "@/lib/planos";
 import { resolverPeriodo } from "@/lib/relatorio";
 import { ComandasTab } from "./comandas-tab";
 import { DespesasTab } from "./despesas-tab";
@@ -34,7 +36,7 @@ export default async function FinanceiroPage({
     servico?: string;
   }>;
 }) {
-  await requireSection("financeiro");
+  const ctx = await requireSection("financeiro");
   const sp = await searchParams;
   const abaAtiva: Aba =
     sp.aba === "despesas"
@@ -44,6 +46,14 @@ export default async function FinanceiroPage({
         : sp.aba === "comissoes"
           ? "comissoes"
           : "comandas";
+  // Comandas é livre desde o Essencial; as outras 3 abas exigem Profissional+.
+  const avancadoLiberado = capacidadeLiberadaPeloPlano(
+    "financeiro_avancado",
+    ctx.tenant.plano,
+  );
+  if (abaAtiva !== "comandas" && !avancadoLiberado) {
+    redirect("/assinar?erro=plano");
+  }
   const mes = normalizarMes(sp.mes);
   const comPeriodo = ABAS_PERIODO.includes(abaAtiva);
 
@@ -92,9 +102,13 @@ export default async function FinanceiroPage({
         active={abaAtiva}
         items={[
           { key: "comandas", label: "Comandas", href: qMes("comandas", mes) },
-          { key: "despesas", label: "Despesas", href: qMes("despesas", mes) },
-          { key: "relatorios", label: "Relatórios", href: "/financeiro?aba=relatorios" },
-          { key: "comissoes", label: "Comissões", href: "/financeiro?aba=comissoes" },
+          ...(avancadoLiberado
+            ? [
+                { key: "despesas", label: "Despesas", href: qMes("despesas", mes) },
+                { key: "relatorios", label: "Relatórios", href: "/financeiro?aba=relatorios" },
+                { key: "comissoes", label: "Comissões", href: "/financeiro?aba=comissoes" },
+              ]
+            : []),
         ]}
       />
 

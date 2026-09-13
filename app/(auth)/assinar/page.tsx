@@ -24,7 +24,7 @@ export default async function AssinarPage({
     pago?: string;
     portal?: string;
     cancelada?: string;
-    erro?: "cpf" | "asaas";
+    erro?: "cpf" | "asaas" | "plano";
   }>;
 }) {
   const ctx = await getAppContext();
@@ -111,6 +111,12 @@ export default async function AssinarPage({
         <p className="mt-3 rounded-xl bg-garnet/15 px-4 py-2.5 text-[12.5px] text-garnet">
           Não foi possível iniciar o pagamento agora. Tente de novo em
           instantes — se persistir, avise o suporte.
+        </p>
+      )}
+      {erro === "plano" && (
+        <p className="mt-3 rounded-xl bg-garnet/15 px-4 py-2.5 text-[12.5px] text-garnet">
+          Esse recurso não faz parte do seu plano atual. Escolha um plano
+          abaixo para liberar.
         </p>
       )}
 
