@@ -77,8 +77,7 @@ export async function criarAssinatura(params: {
 }): Promise<AssinaturaAsaas> {
   const p = PLANOS[params.plano];
 
-  let customerId = params.customerIdExistente ?? "";
-  if (!customerId) {
+  async function criarClienteNovo(): Promise<string> {
     const cliente = await asaasFetch<AsaasCustomer>("/customers", {
       method: "POST",
       body: JSON.stringify({
@@ -88,21 +87,38 @@ export async function criarAssinatura(params: {
         externalReference: params.tenantId,
       }),
     });
-    customerId = cliente.id;
+    return cliente.id;
   }
 
-  const assinatura = await asaasFetch<AsaasSubscription>("/subscriptions", {
-    method: "POST",
-    body: JSON.stringify({
-      customer: customerId,
-      billingType: "UNDEFINED",
-      value: p.valorReais,
-      nextDueDate: hojeISO(),
-      cycle: "MONTHLY",
-      description: `BRYM · plano ${p.nome}`,
-      externalReference: params.tenantId,
-    }),
-  });
+  async function criarSubscription(customerId: string) {
+    return asaasFetch<AsaasSubscription>("/subscriptions", {
+      method: "POST",
+      body: JSON.stringify({
+        customer: customerId,
+        billingType: "UNDEFINED",
+        value: p.valorReais,
+        nextDueDate: hojeISO(),
+        cycle: "MONTHLY",
+        description: `BRYM · plano ${p.nome}`,
+        externalReference: params.tenantId,
+      }),
+    });
+  }
+
+  let customerId = params.customerIdExistente || (await criarClienteNovo());
+
+  let assinatura: AsaasSubscription;
+  try {
+    assinatura = await criarSubscription(customerId);
+  } catch (err) {
+    // O `gateway_customer_id` salvo pode estar obsoleto (cliente apagado /
+    // inválido na Asaas — já aconteceu por engano com um teste em produção).
+    // Só vale re-tentar quando o cliente reusado é que pode ser o problema;
+    // se ele já era novo, o erro é outra coisa e não tem o que recriar.
+    if (!params.customerIdExistente) throw err;
+    customerId = await criarClienteNovo();
+    assinatura = await criarSubscription(customerId);
+  }
 
   const cobrancas = await asaasFetch<AsaasPaymentList>(
     `/subscriptions/${assinatura.id}/payments?limit=1`,
