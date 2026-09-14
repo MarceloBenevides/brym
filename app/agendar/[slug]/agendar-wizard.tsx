@@ -46,6 +46,7 @@ export interface CatalogoProfissional {
 export interface Catalogo {
   encontrado: boolean;
   negocio_nome?: string;
+  negocio_logo_url?: string | null;
   intervalo_min?: number;
   categorias?: Categoria[];
   servicos?: CatalogoServico[];
@@ -103,7 +104,6 @@ export function AgendarWizard({
 
   return (
     <div className="flex-1 py-6">
-      <p className="mb-1 text-[12px] text-text-faint">{catalogo.negocio_nome}</p>
       <h1 className="mb-6 font-display text-2xl font-semibold text-white">
         Agendar horário
       </h1>

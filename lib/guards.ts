@@ -5,7 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { destinoBloqueio } from "@/lib/assinatura";
 import { getAppContext, type AppContext } from "@/lib/auth";
 import { podeAcessarSecao } from "@/lib/permissions";
-import { secaoLiberadaPeloPlano } from "@/lib/planos";
+import { planoEfetivo, secaoLiberadaPeloPlano } from "@/lib/planos";
 import { secaoHabilitada } from "@/lib/settings";
 import { createClient } from "@/lib/supabase/server";
 import type { ComandaRow } from "@/types/database";
@@ -33,7 +33,8 @@ export async function requireSection(secao: string) {
   const ctx = await requireApp();
   if (!podeAcessarSecao(ctx, secao)) redirect("/agenda");
   if (!secaoHabilitada(secao, ctx.settings)) redirect("/agenda");
-  if (!secaoLiberadaPeloPlano(secao, ctx.tenant.plano)) redirect("/assinar?erro=plano");
+  if (!secaoLiberadaPeloPlano(secao, planoEfetivo(ctx.tenant.plano, ctx.tenant.plano_manual)))
+    redirect("/assinar?erro=plano");
   return ctx;
 }
 

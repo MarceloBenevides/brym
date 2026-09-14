@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 
+import { BrymFooter } from "@/components/brand/brym-footer";
 import { GoldStripe } from "@/components/brand/gold-stripe";
 import { Logo } from "@/components/brand/logo";
+import { NegocioHeader } from "@/components/brand/negocio-header";
 import { createClient } from "@/lib/supabase/server";
 import { AgendarWizard, type Catalogo } from "./agendar-wizard";
 
@@ -23,19 +25,28 @@ export default async function AgendarPage({
     <div className="flex min-h-dvh flex-col bg-ink">
       <GoldStripe />
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-6 py-10">
-        <Logo dark />
         {!catalogo?.encontrado ? (
-          <div className="flex flex-1 flex-col justify-center py-10">
-            <h1 className="font-display text-2xl font-semibold text-white">
-              Negócio não encontrado
-            </h1>
-            <p className="mt-2 text-[13.5px] text-text-faint">
-              Confira o link que você recebeu do estabelecimento.
-            </p>
-          </div>
+          <>
+            <Logo dark />
+            <div className="flex flex-1 flex-col justify-center py-10">
+              <h1 className="font-display text-2xl font-semibold text-white">
+                Negócio não encontrado
+              </h1>
+              <p className="mt-2 text-[13.5px] text-text-faint">
+                Confira o link que você recebeu do estabelecimento.
+              </p>
+            </div>
+          </>
         ) : (
-          <AgendarWizard slug={slug} catalogo={catalogo} />
+          <>
+            <NegocioHeader
+              nome={catalogo.negocio_nome ?? ""}
+              logoUrl={catalogo.negocio_logo_url}
+            />
+            <AgendarWizard slug={slug} catalogo={catalogo} />
+          </>
         )}
+        <BrymFooter />
       </div>
     </div>
   );

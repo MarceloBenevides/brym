@@ -44,7 +44,38 @@ export async function salvarNegocioAction(
     return { error: "Não foi possível salvar o nome do negócio." };
   }
 
-  // O nome aparece na topbar (fora de /conta) — revalida o layout inteiro.
+  // logo: um arquivo novo tem prioridade sobre "remover logo" — mesmo
+  // padrão de app/(app)/equipe/professionals-actions.ts pra foto de
+  // profissional, só que 1 logo por negócio (caminho = <tenant_id>, sem
+  // sub-id) em vez de 1 foto por profissional.
+  const logoPath = ctx.tenant.id;
+  const logo = formData.get("logo");
+  if (logo instanceof File && logo.size > 0) {
+    if (logo.size > 5 * 1024 * 1024) {
+      return { error: "A logo precisa ter no máximo 5MB." };
+    }
+    if (!["image/jpeg", "image/png", "image/webp"].includes(logo.type)) {
+      return { error: "Envie uma logo em JPEG, PNG ou WEBP." };
+    }
+    const { error: eUpload } = await supabase.storage
+      .from("logos-negocios")
+      .upload(logoPath, logo, { upsert: true, contentType: logo.type });
+    if (eUpload) {
+      return { error: "Não foi possível enviar a logo." };
+    }
+    const { data: pub } = supabase.storage
+      .from("logos-negocios")
+      .getPublicUrl(logoPath);
+    await supabase
+      .from("tenants")
+      .update({ logo_url: `${pub.publicUrl}?v=${Date.now()}` })
+      .eq("id", ctx.tenant.id);
+  } else if (formData.get("remover_logo") === "1") {
+    await supabase.storage.from("logos-negocios").remove([logoPath]);
+    await supabase.from("tenants").update({ logo_url: null }).eq("id", ctx.tenant.id);
+  }
+
+  // O nome (e a logo) aparecem na topbar/telas públicas — revalida o layout inteiro.
   revalidatePath("/", "layout");
   return { ok: true };
 }

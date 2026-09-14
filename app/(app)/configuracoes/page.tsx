@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { PageHeader } from "@/components/app-shell/page-header";
 import { requireOwner } from "@/lib/guards";
+import { planoEfetivo } from "@/lib/planos";
 import { createClient } from "@/lib/supabase/server";
 import type { TenantSettingsRow } from "@/types/database";
 import { SettingsForm } from "./settings-form";
@@ -26,7 +27,10 @@ export default async function ConfiguracoesPage() {
     <div>
       <PageHeader title="Configurações" subtitle="Preferências do negócio" />
       {settings ? (
-        <SettingsForm settings={settings} plano={ctx.tenant.plano} />
+        <SettingsForm
+          settings={settings}
+          plano={planoEfetivo(ctx.tenant.plano, ctx.tenant.plano_manual)}
+        />
       ) : (
         <p className="text-[13.5px] text-text-soft">
           Não foi possível carregar as preferências. Recarregue a página.

@@ -14,7 +14,12 @@ export default async function ContaPage() {
     <div>
       <PageHeader title="Minha conta" subtitle="Seus dados de acesso ao BRYM" />
       <div className="mt-6 max-w-lg space-y-6">
-        {ctx.isOwner && <NegocioForm nomeAtual={ctx.tenant.nome} />}
+        {ctx.isOwner && (
+          <NegocioForm
+            nomeAtual={ctx.tenant.nome}
+            logoUrlAtual={ctx.tenant.logo_url}
+          />
+        )}
         <DadosForm
           nomeAtual={ctx.profile.nome}
           telefoneAtual={ctx.profile.telefone}

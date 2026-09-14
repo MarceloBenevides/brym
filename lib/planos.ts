@@ -152,3 +152,19 @@ export function capacidadeLiberadaPeloPlano(
 ): boolean {
   return liberadoPeloPlano(PLANO_MINIMO_CAPACIDADE[capacidade], plano);
 }
+
+/**
+ * O plano que realmente vale pra régua de acesso: o maior entre o que está
+ * sendo cobrado de verdade (`plano`) e uma liberação manual do admin da
+ * plataforma (`planoManual`, `/admin` — cortesia, sem mexer no que é
+ * cobrado). Uma liberação manual nunca **reduz** o que o negócio já tem
+ * por direito de pagamento, só pode aumentar.
+ */
+export function planoEfetivo(
+  plano: PlanoAssinatura | null,
+  planoManual: PlanoAssinatura | null,
+): PlanoAssinatura | null {
+  if (!planoManual) return plano;
+  if (!plano) return planoManual;
+  return ORDEM_PLANO[planoManual] > ORDEM_PLANO[plano] ? planoManual : plano;
+}

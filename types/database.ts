@@ -31,6 +31,8 @@ export interface TenantRow {
   segmento: Segmento;
   telefone: string | null;
   endereco: string | null;
+  /** Logo do negócio nas telas públicas (migration 0038). `null` = fallback círculo com inicial. */
+  logo_url: string | null;
   plano_assinatura: string;
   status_assinatura: StatusAssinatura;
   trial_expira_em: string | null;
@@ -42,6 +44,10 @@ export interface TenantRow {
   /** CPF/CNPJ do responsável — exigido pelo Asaas pra criar a assinatura. */
   cpf_cnpj: string | null;
   plano: PlanoAssinatura | null;
+  /** Liberação manual do admin da plataforma (migration 0037) — nunca reduz
+   * o que o negócio já tem por direito de pagamento, só pode aumentar
+   * (ver `lib/planos.ts` `planoEfetivo`). */
+  plano_manual: PlanoAssinatura | null;
   /** Acesso pago liberado enquanto `now() < assinatura_ativa_ate`. */
   assinatura_ativa_ate: string | null;
   assinatura_em_atraso: boolean;

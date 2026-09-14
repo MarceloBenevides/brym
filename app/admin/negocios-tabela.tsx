@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Pill } from "@/components/ui/pill";
-import { planoLabel } from "@/lib/planos";
+import { PLANOS, planoLabel } from "@/lib/planos";
 import { segmentoLabel } from "@/lib/segments";
 import {
   STATUS_ASSINATURA_LABEL,
@@ -109,6 +109,13 @@ export function NegociosTabela({ negocios }: { negocios: PlataformaNegocio[] }) 
                   ) : (
                     <span className="text-text-faint">—</span>
                   )}
+                  {n.plano_manual && (
+                    <div className="mt-1">
+                      <Pill tone="gold">
+                        + liberado: {PLANOS[n.plano_manual].nome}
+                      </Pill>
+                    </div>
+                  )}
                 </td>
                 <td className="px-5 py-3.5 whitespace-nowrap text-text-soft">
                   {dataBR(n.criado_em)}
@@ -132,7 +139,11 @@ export function NegociosTabela({ negocios }: { negocios: PlataformaNegocio[] }) 
                   {dataBR(n.ultimo_agendamento)}
                 </td>
                 <td className="px-5 py-3.5 text-right">
-                  <NegocioAcoesMenu id={n.id} status={n.status_assinatura} />
+                  <NegocioAcoesMenu
+                    id={n.id}
+                    status={n.status_assinatura}
+                    planoManual={n.plano_manual}
+                  />
                 </td>
               </tr>
             );

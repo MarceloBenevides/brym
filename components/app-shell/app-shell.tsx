@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/cn";
+import { planoEfetivo } from "@/lib/planos";
 import type { ProfileRow, TenantRow, TenantSettingsRow } from "@/types/database";
 import { AppTopBar } from "./app-top-bar";
 import { AssinaturaBanner } from "./assinatura-banner";
@@ -73,7 +74,7 @@ export function AppShell({
           isProfessional={isProfessional}
           plataformaAdmin={plataformaAdmin}
           settings={settings}
-          plano={tenant.plano}
+          plano={planoEfetivo(tenant.plano, tenant.plano_manual)}
         />
       </div>
       <div className="flex min-w-0 flex-1 flex-col">

@@ -43,6 +43,8 @@ export interface PlataformaNegocio {
   dono_nome: string | null;
   dono_email: string | null;
   plano: PlanoAssinatura | null;
+  /** Liberação manual do admin da plataforma (migration 0037). */
+  plano_manual: PlanoAssinatura | null;
   gateway: GatewayPagamento | null;
   assinatura_ativa_ate: string | null;
   assinatura_em_atraso: boolean;

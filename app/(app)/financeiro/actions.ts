@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { requireSection } from "@/lib/guards";
 import { CATEGORIAS_DESPESA } from "@/lib/despesas";
-import { capacidadeLiberadaPeloPlano } from "@/lib/planos";
+import { capacidadeLiberadaPeloPlano, planoEfetivo } from "@/lib/planos";
 import { createClient } from "@/lib/supabase/server";
 
 export interface ExpenseState {
@@ -26,7 +26,7 @@ export async function saveExpenseAction(
   formData: FormData,
 ): Promise<ExpenseState> {
   const ctx = await requireSection("financeiro");
-  if (!capacidadeLiberadaPeloPlano("financeiro_avancado", ctx.tenant.plano)) {
+  if (!capacidadeLiberadaPeloPlano("financeiro_avancado", planoEfetivo(ctx.tenant.plano, ctx.tenant.plano_manual))) {
     return { error: "Despesas não fazem parte do seu plano atual." };
   }
 
@@ -65,7 +65,7 @@ export async function saveExpenseAction(
 
 export async function setExpenseStatusAction(formData: FormData) {
   const ctx = await requireSection("financeiro");
-  if (!capacidadeLiberadaPeloPlano("financeiro_avancado", ctx.tenant.plano)) return;
+  if (!capacidadeLiberadaPeloPlano("financeiro_avancado", planoEfetivo(ctx.tenant.plano, ctx.tenant.plano_manual))) return;
   const id = formData.get("id");
   const status = formData.get("status");
   if (typeof id !== "string" || (status !== "pago" && status !== "pendente")) {
@@ -79,7 +79,7 @@ export async function setExpenseStatusAction(formData: FormData) {
 
 export async function deleteExpenseAction(formData: FormData) {
   const ctx = await requireSection("financeiro");
-  if (!capacidadeLiberadaPeloPlano("financeiro_avancado", ctx.tenant.plano)) return;
+  if (!capacidadeLiberadaPeloPlano("financeiro_avancado", planoEfetivo(ctx.tenant.plano, ctx.tenant.plano_manual))) return;
   const id = formData.get("id");
   if (typeof id !== "string") return;
 

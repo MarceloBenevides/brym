@@ -72,6 +72,28 @@ export async function ativarManualAction(formData: FormData) {
   revalidatePath("/admin");
 }
 
+const planoManualSchema = z.object({
+  tenant_id: z.uuid(),
+  plano: z.enum(["essencial", "profissional", "gestao", ""]),
+});
+
+export async function definirPlanoManualAction(formData: FormData) {
+  await requirePlataformaAdmin();
+
+  const parsed = planoManualSchema.safeParse({
+    tenant_id: formData.get("tenant_id"),
+    plano: formData.get("plano") ?? "",
+  });
+  if (!parsed.success) return;
+
+  const supabase = await createClient();
+  await supabase.rpc("plataforma_definir_plano_manual", {
+    p_tenant_id: parsed.data.tenant_id,
+    p_plano: parsed.data.plano || null,
+  });
+  revalidatePath("/admin");
+}
+
 const vincularSchema = z.object({
   event_id: z.string().min(1),
   tenant_id: z.uuid(),

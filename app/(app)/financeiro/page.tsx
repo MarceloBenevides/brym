@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/app-shell/page-header";
 import { Tabs } from "@/components/ui/tabs";
 import { requireSection } from "@/lib/guards";
 import { mesAtualISO, mesPorExtenso, normalizarMes, somarMeses } from "@/lib/mes";
-import { capacidadeLiberadaPeloPlano } from "@/lib/planos";
+import { capacidadeLiberadaPeloPlano, planoEfetivo } from "@/lib/planos";
 import { resolverPeriodo } from "@/lib/relatorio";
 import { ComandasTab } from "./comandas-tab";
 import { DespesasTab } from "./despesas-tab";
@@ -49,7 +49,7 @@ export default async function FinanceiroPage({
   // Comandas é livre desde o Essencial; as outras 3 abas exigem Profissional+.
   const avancadoLiberado = capacidadeLiberadaPeloPlano(
     "financeiro_avancado",
-    ctx.tenant.plano,
+    planoEfetivo(ctx.tenant.plano, ctx.tenant.plano_manual),
   );
   if (abaAtiva !== "comandas" && !avancadoLiberado) {
     redirect("/assinar?erro=plano");

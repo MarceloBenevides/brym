@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import type { ReactNode } from "react";
 
+import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { TextField } from "@/components/ui/text-field";
@@ -42,11 +43,65 @@ function Rodape({ state }: { state: FormState }) {
   );
 }
 
-export function NegocioForm({ nomeAtual }: { nomeAtual: string }) {
+export function NegocioForm({
+  nomeAtual,
+  logoUrlAtual,
+}: {
+  nomeAtual: string;
+  logoUrlAtual: string | null;
+}) {
   const [state, action] = useActionState(salvarNegocioAction, INITIAL);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [removerLogo, setRemoverLogo] = useState(false);
+
   return (
     <Secao titulo="Nome do negócio">
       <form action={action} className="space-y-4">
+        <input type="hidden" name="remover_logo" value={removerLogo ? "1" : ""} />
+
+        <div className="flex items-center gap-3">
+          <Avatar
+            nome={nomeAtual}
+            fotoUrl={logoPreview ?? (removerLogo ? null : logoUrlAtual)}
+            size={56}
+            tone="ink"
+          />
+          <div className="flex flex-col gap-1.5">
+            <label className="cursor-pointer text-[12.5px] font-semibold text-gold-deep">
+              {logoPreview || (logoUrlAtual && !removerLogo)
+                ? "Trocar logo"
+                : "Adicionar logo"}
+              <input
+                type="file"
+                name="logo"
+                accept="image/jpeg,image/png,image/webp"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setRemoverLogo(false);
+                  setLogoPreview(URL.createObjectURL(file));
+                }}
+              />
+            </label>
+            {(logoUrlAtual || logoPreview) && !removerLogo && (
+              <button
+                type="button"
+                onClick={() => {
+                  setRemoverLogo(true);
+                  setLogoPreview(null);
+                }}
+                className="text-left text-[12.5px] font-semibold text-text-faint"
+              >
+                Remover logo
+              </button>
+            )}
+            <p className="text-[11.5px] text-text-faint">
+              Aparece no link de agendamento e no portal do cliente.
+            </p>
+          </div>
+        </div>
+
         <TextField name="nome" label="Nome" defaultValue={nomeAtual} required minLength={2} />
         <Rodape state={state} />
       </form>

@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { MoreHorizontal } from "lucide-react";
 
 import { ActionButton } from "@/components/ui/action-button";
-import type { StatusAssinatura } from "@/types/database";
+import type { PlanoAssinatura, StatusAssinatura } from "@/types/database";
 import {
   ativarManualAction,
+  definirPlanoManualAction,
   estenderTrialAction,
   setStatusNegocioAction,
 } from "./actions";
@@ -21,9 +22,11 @@ import {
 export function NegocioAcoesMenu({
   id,
   status,
+  planoManual,
 }: {
   id: string;
   status: StatusAssinatura;
+  planoManual: PlanoAssinatura | null;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -117,6 +120,42 @@ export function NegocioAcoesMenu({
                   </ActionButton>
                 </form>
               ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="mb-1.5 text-[10.5px] font-semibold tracking-wide text-text-faint uppercase">
+              Plano liberado
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                { plano: "essencial", label: "Essencial" },
+                { plano: "profissional", label: "Profissional" },
+                { plano: "gestao", label: "Gestão" },
+              ].map((o) => (
+                <form key={o.plano} action={definirPlanoManualAction}>
+                  <input type="hidden" name="tenant_id" value={id} />
+                  <input type="hidden" name="plano" value={o.plano} />
+                  <ActionButton
+                    className={
+                      planoManual === o.plano
+                        ? "rounded-lg border border-gold-deep px-2 py-1 text-[11.5px] font-semibold text-gold-deep"
+                        : "rounded-lg border border-border px-2 py-1 text-[11.5px] font-semibold text-text-soft hover:border-gold-deep hover:text-gold-deep"
+                    }
+                  >
+                    {o.label}
+                  </ActionButton>
+                </form>
+              ))}
+              {planoManual && (
+                <form action={definirPlanoManualAction}>
+                  <input type="hidden" name="tenant_id" value={id} />
+                  <input type="hidden" name="plano" value="" />
+                  <ActionButton className="rounded-lg border border-border px-2 py-1 text-[11.5px] font-semibold text-text-soft hover:border-garnet hover:text-garnet">
+                    Remover
+                  </ActionButton>
+                </form>
+              )}
             </div>
           </div>
         </div>
