@@ -203,13 +203,6 @@ export default async function AssinarPage({
       </div>
       )}
 
-      {!precisaCpf && (
-        <p className="mt-3 text-[11.5px] text-text-faint">
-          Pagamento por Pix, boleto ou cartão — você escolhe na página do Asaas.
-          Documento: {formatarCpfCnpj(tenant.cpf_cnpj)}.
-        </p>
-      )}
-
       <div className="mt-6 flex flex-wrap items-center gap-3">
         {temPortalStripe && (
           <form action="/api/stripe/portal" method="post">
